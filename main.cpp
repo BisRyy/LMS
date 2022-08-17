@@ -54,7 +54,7 @@ void cont(int t=0){
     if(t==0)
         cin.ignore();
     cin.getline(x, 50);
-    // clear();
+    clear();
 }
 
 // Hash passwords for security
@@ -1043,7 +1043,7 @@ void firstMenu(){
     int choice;
     do {
         cout << "\n\n\t\t----------------- WELCOME TO AASTU LMS -----------------\n" << endl;
-        cout << "\t\t >> Please Enter any option\n\n\t\t1. Student\n\n\t\t2. Librarian\n\n\t\t3. Exit\n\n\t\t0. Admin\n\n\t\tEnter your choice: \t";
+        cout << "\t\t >> I'm: \n\n\t\t1. Student\n\n\t\t2. Librarian\n\n\t\t3. Exit\n\n\t\t0. Admin\n\n\t\tEnter your choice: \t";
         cin >> choice;
 
         switch (choice){
