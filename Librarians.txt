@@ -1,9 +1,8 @@
 --------- 	--------------------   	----------
- ID          Hash                    Full_Name
+ ID          	Hash                    Full_Name
 --------- 	--------------------   	----------
-0306 	    234567              	Bisrat_Kebere
+0306 	   	 234567              	Bisrat_Kebere
 0387      	hg`sdxnt            	Duresa_Eshetu
 0309      	012210              	Biyaol_Mesay        
 0000      	////                	Alster_Aweke        
-          	                    	                    
-          	                    	                    
+1211      	01100110           	Demelash_Asmelash  

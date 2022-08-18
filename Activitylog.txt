@@ -1,0 +1,31 @@
+---------------------------------------------
+                ACTIVITY LOG
+---------------------------------------------
+Student 0306 Registered.
+Student 0307 Logged in.
+Student Requested Book A0001.
+Librarian 0012 Logged in.
+Librarian 0012 Approved Student 0306's Request For Book A0001.
+Librarian 0012 Added Book A0006.
+Librarian 0012 Updated Book A0006.
+Librarian 0012 Logged out.
+Admin Added new Librarian 0309.
+Librarian 0309 Logged in.
+Librarian 0309 Added Book A0006.
+Librarian 0309 Changed Name.
+New Student 1111 Registered.
+New Student 12222 Registered.
+New Student 12222 Logged in.
+Student 12222 Searched for book A122.
+Student 12222 Requested to borrow book A0004.
+Student 12222 Changed his/her name from Abebe toDebebe.
+Student 12222 Changed password..
+Student 12222 Deleted his/her Account.
+New Student 0306 Logged in.
+New Student 0306 Logged in.
+New Librarian 0306 Logged in.
+Librarian 0306 Added new book A0007.
+Librarian 0306 Updated book A0001 info.
+Librarian 0306 Deleted book A0007.
+New Librarian 0306 Logged in.
+Admin       Added new book A0005.

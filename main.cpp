@@ -6,8 +6,8 @@
 
 using namespace std;
 
-// system("color=04")
-char files[10][50] {"Users.txt", "Librarians.txt", "Books.txt", "activitylog.txt", "report.txt", "temp.txt", "Requests.txt", "accepted.txt", "Blacklist.txt"};
+// system("color=04");
+char files[10][50] {"Users.txt", "Librarians.txt", "Books.txt", "Activitylog.txt", "Report.txt", "temp.txt", "Requests.txt", "Accepted.txt", "Blacklist.txt"};
 
 struct book{
     char title[50];
@@ -98,7 +98,7 @@ bool verifyPassword(int t){
     return verified;
 }
 
-// Replace ' ' blank space for files
+// Replace ' ' blank space for files and return string
 string replace(char *value, char x = ' ', char y= '_'){
     string v;
     for(int i=0; i<strlen(value); i++){
@@ -109,15 +109,13 @@ string replace(char *value, char x = ' ', char y= '_'){
     return v;
 }
 
-// char* replace2(char value[], char x = ' ', char y= '_'){
-//     char v[50];
-//     for(int i=0; i<strlen(value); i++){
-//         if (value[i] == x)
-//             value[i] = y;
-//         v[i] = value[i];
-//     }
-//     return *v;
-// }
+// Replace ' ' blank space from memory
+void replace2(char *value, char x = ' ', char y= '_'){
+     for(int i=0; i<strlen(value); i++){
+         if (value[i] == x)
+             value[i] = y;
+     }
+ }
 
 // Check if the search value exists in the file
 bool check(char x[50], int t=0)
@@ -145,22 +143,32 @@ void signin(int t=0)
     cin.ignore();
     cout << "\n\n\t\t Enter Full Name: \t";
     cin.getline(newuser.name, 50);
+    if(strlen(newuser.name) > 3 && newuser.name[0] != ' '){
 
     cout << "\n\n\t\t Hi " << newuser.name << ":-)\n\n\t\t Enter your Id No: \t";
     cin.getline(newuser.id, 10);
     if(!check(newuser.id, t)){
-        // cin.ignore();
-        cout << "\n\n\t\t>Enter Password: \t";
-        cin.getline(newuser.pass, 50);
-
-        fstream file;
-        file.open(files[t], ios::out | ios::app);
-        file  << "\n" << setw(10) << left <<  newuser.id << "\t" <<  setw(20) << left << securePassword(newuser.pass) << "\t" << setw(20) << left <<  replace(newuser.name);
-        file.close();
-        cout << "\n\n\t\t Registration Successfull\n";
-    }
-    else
+        if (strlen(newuser.id)>3){
+            // cin.ignore();
+            cout << "\n\n\t\t>Enter Password: \t";
+            cin.getline(newuser.pass, 50);
+            if(strlen(newuser.pass)>3){
+                fstream file;
+                file.open(files[t], ios::out | ios::app);
+                file  << "\n" << setw(10) << left <<  newuser.id << "\t" <<  setw(20) << left << securePassword(newuser.pass) << "\t" << setw(20) << left <<  replace(newuser.name);
+                file.close();
+                cout << "\n\n\t\t Registration Successfull\n";
+                fstream log; log.open(files[3], ios::out | ios::app);
+                t == 1? log << "New Librarian " << newuser.id << " Added by Admin.\n": log << "New Student " << newuser.id << " Registered.\n";
+                log.close();
+            }else
+                cout << "\n\t\tInvalid Password!\n";
+        }else
+            cout << "\n\t\tInvalid ID!\n";
+    }else
         cout << "\n\n\t\t I think you already have an Account.\n\t\tTry Logging in..." << endl;
+    }else
+        cout << "\n\t\tInvalid Name. Please Enter your full name!\n";
     cont(1);
 }
 
@@ -185,7 +193,6 @@ bool login(int t=0){
     while(file>>u>>p>>n){
         if(strcmp(currentuser.id, u)==0){
             strcpy(currentuser.name, n);
-            strcpy(currentuser.pass, p);
             t == 0 ? currentuser.type = "Student": currentuser.type = "Librarian";
             success = true;
             break;
@@ -195,9 +202,10 @@ bool login(int t=0){
 
     if(success)
         if (verifyPassword(t)){
-            strcpy(currentuser.name, n);
-            strcpy(currentuser.id, u);
             cout << "\n\n\t\tLog in Successfull.\n";
+            fstream log; log.open(files[3], ios::out | ios::app);
+            log << "New " << currentuser.type << " " << currentuser.id << " Logged in.\n";
+            log.close();
         }
         else{
             success = false;
@@ -213,17 +221,44 @@ bool login(int t=0){
 
 void myInfo(){
       clear();
-    cout << "Name: " << replace(currentuser.name, '_', ' ') << endl;
-    cout << "  Id: " << currentuser.id << endl;
-    cout << "Pass: " << currentuser.pass << endl;
-    cout << "Type: " << currentuser.type << endl;
+    cout << "\n\n\t\tName: " << replace(currentuser.name, '_', ' ') << endl;
+    cout << "\n\t\t  Id: " << currentuser.id << endl;
+    cout << "\n\t\tPass: " << currentuser.pass << endl;
+    cout << "\n\t\tType: " << currentuser.type << endl;
     cont();
 }
 
 void info(){
-    cout << "\n\n\t\t>> Logged in as " << currentuser.type << " " << currentuser.id;
+    cout << "\n\t\t>> Logged in as " << currentuser.type << " " << currentuser.id << " <<\n";
 }
 
+int counter(int t=0){
+    int count = -4;
+    string getcontent;
+    ifstream openfile (files[t]);
+        if(openfile.is_open()){
+            while(!openfile.eof()){
+            getline (openfile, getcontent);
+            count++;
+        }
+        openfile.close();
+    }
+    return count;
+}
+
+void inventory(){
+    clear();
+    cout << "\n\n\t\t----------------- CURRENT INVENTORY AND USER STATUS -----------------\n";
+    cout << "\n\t\t    Total Books: " << counter(2);
+    cout << "\n\t\t  Total Borrows: " << counter(7);
+    cout << "\n\t\t Total Requests: " << counter(6);
+    cout << "\n\t\t    Total Users: " << counter();
+    cout << "\n\t\tBlacklist Users: " << counter(8);
+    cout << "\n\t\tTotal Librarian: " << counter(1);
+    cout << endl;
+    cont();
+
+}
 // Delete Account
 void deleteAcc(int t=0){
       clear();
@@ -240,10 +275,15 @@ void deleteAcc(int t=0){
                 cin >> cp;
                 if(cp== securePassword(p, 'd')){
                     cout << "\n\n\t\tAccount Deleted successfully!\n";
+                    cont();
+                    fstream log; log.open(files[3], ios::out | ios::app);
+                    log << currentuser.type << " " << currentuser.id << " Deleted his/her Account.\n";
+                    log.close();
                 }
                 else{
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" << setw(20) << left <<  n << endl;
-                    cout << "\n\n\t\tIncorrect Password!\n\n\t\tLogging out....";
+                    cout << "\n\n\t\tIncorrect Password! Logging out....";
+                    cont();
                 }
             }else
                 write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" << setw(20) << left <<  n << endl;
@@ -282,6 +322,9 @@ void forgotpassword(int t=0){
             cin.getline(x.name, 50);
             if(n== replace(x.name)){
                 cout << "\n\n\t\t>> Your password is: \t" << securePassword(p, 'd') << endl << "\n\t\tTry Not to forget Again!\n";
+                fstream log; log.open(files[3], ios::out | ios::app);
+                log << "Student " << x.id << " Recovered his/her Password.\n";
+                log.close();
             }else
                 cout << "\n\n\t\t >> Who are you?\n\n\t\tTry Registering.\n" << endl;
         }
@@ -315,17 +358,21 @@ void addbook(){
             cin.getline(newbook.author, 50);
             file << setw(10) << left << newbook.id << "\t" << setw(40) << left<< replace(newbook.title, ' ', '_') << "\t" << setw(20) << left << replace(newbook.author, ' ', '_') << "\n";
             file.close();
+
+            fstream log; log.open(files[3], ios::out | ios::app);
+            log << currentuser.type << " " << currentuser.id << " Added new book " << newbook.id <<".\n";
+            log.close();
         }else
             cout << "\n\n\t\tThere is a Book with this ID.\n\n\t\tCheck the Id or Delete the existing Book.\n"; break;
     }
-    cont();
+    cont(1);
 }
 
 // User Search for a book
 void searchbook(){
       clear();
     int choice;
-    cout << "\n----------------- Search By -----------------\n" << endl;
+    cout << "\n\n\t\t----------------- Search By -----------------\n" << endl;
     cout << "\n\t\t1. ID\n\n\t\t2. Title\n\n\t\t3. Author\n\n\t\tEnter your choice: \t";
     cin >> choice;
     switch (choice)
@@ -344,7 +391,7 @@ void searchbook(){
     char value[4][50];
     cin.ignore();
     cin.getline(value[0], 50);
-
+    replace2(value[0]);
     bool found = false;
 
     ifstream searchb(files[2]);
@@ -353,12 +400,15 @@ void searchbook(){
         int x = strncasecmp(value[0], value[choice], strlen(value[0]));
         if(x == 0){
             found = true;
-            cout << "\n\t--------------\n";
-            cout << setw(10) << left << value[1] << setw(40) << left << replace(value[2], '_', ' ') << "by " <<setw(10) << left  << replace(value[3], '_', ' ');
+            cout << "\n\t\t--------------\n";
+            cout << "\t\t" << setw(10) << left << value[1] << setw(40) << left << replace(value[2], '_', ' ') << "by " <<setw(10) << left  << replace(value[3], '_', ' ');
         }
     }
     if (!found)
             cout << "\n\n\t\t>> Nothing found!";
+    fstream log; log.open(files[3], ios::out | ios::app);
+    log << currentuser.type << " " << currentuser.id << " Searched for book " << value[0] <<".\n";
+    log.close();
     cont(1);
 }
 
@@ -370,7 +420,7 @@ void showfile(int t=2){
         if(openfile.is_open()){
             while(!openfile.eof()){
             getline (openfile, getcontent);
-            cout << getcontent << endl; // these two lines alone in a while loop display ALL records
+            cout << "\n\t\t" << getcontent << endl; // these two lines alone in a while loop display ALL records
         }
         openfile.close();
      }
@@ -396,6 +446,9 @@ void updatebook(){
                 cin.getline(bn, 50);
                 cout << "\n\n\t\tCurrent Author Name: \t" << an  << "\n\n\t\tEnter new Author Name: \t";
                 cin.getline(an, 50);
+                fstream log; log.open(files[3], ios::out | ios::app);
+                log << currentuser.type << " " << currentuser.id << " Updated book " << bid <<" info.\n";
+                log.close();
             }
             write << setw(10) << left <<  bid << "\t" <<  setw(40) << left << replace(bn) << "\t" <<  setw(20) << left << replace(an) << endl;
         }
@@ -406,7 +459,7 @@ void updatebook(){
         cout << "\n\n\t\tUpdate successfull!\n\n";
     }else
         cout << "\n\n\t\tSorry, can't find a book with this ID.\n";
-    cont();
+    cont(1);
 }
 
 // Remove Book Info
@@ -422,9 +475,9 @@ void deletebook(){
         while (open >> bid >> bn >> an) {
             if (strcmp(bid, search) == 0) {
                 string confirm; char y;
-                cout << "\n----------------------------------\n";
+                cout << "\n\t\t----------------------------------\n";
                 cout << bid << "\t" << replace(bn, '_', ' ') << " \tby " << replace(an, '_', ' ') << endl;
-                cout << "----------------------------------\n";
+                cout << "\t\t----------------------------------\n";
                 cout << "\n\n\t\t >> Are you sure? Do you want to delete the this book's data(Y/N)? \t";
                 cin >> confirm;
 
@@ -435,9 +488,12 @@ void deletebook(){
 
                 switch(y){
                     case 'y':
-                    case 'Y':
+                    case 'Y':{
                         cout << "\n\n\t\t>> Deleted successfully!\n";
-                        break;
+                        fstream log; log.open(files[3], ios::out | ios::app);
+                        log << currentuser.type << " " << currentuser.id << " Deleted book " << bid <<".\n";
+                        log.close();
+                        }break;
                     default:
                         cout << "\n\n\t\t>> Deletion canceled!\n";
                         write << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << an << endl;
@@ -486,10 +542,12 @@ void borrowBook(){
 
                     switch(y){
                         case 'y':
-                        case 'Y':
+                        case 'Y':{
                             write << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << currentuser.id << endl;
                             cout << "\n\n\t\t>> Request Successfull" << endl;
-                            break;
+                            fstream log; log.open(files[3], ios::out | ios::app);
+                            log << currentuser.type << " " << currentuser.id << " Requested to borrow book " << bid <<".\n"; log.close();
+                            }break;
                         default:
                             cout << "\n\n\t\tRequest canceled!\n";
                             break;
@@ -525,6 +583,9 @@ void changename(int t=0){
                     strcpy(currentuser.name, nn);
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" <<  setw(20) << left << replace(nn) << endl;
                     cout << "\n\n\t\tUpdate successfull!\n";
+                    fstream log; log.open(files[3], ios::out | ios::app);
+                    log << currentuser.type << " " << currentuser.id << " Changed his/her name from " << n << " to " << nn <<".\n";
+                    log.close();
                 }
                 else{
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" << setw(20) << left <<  n << endl;
@@ -563,6 +624,9 @@ void changepass(int t=0){
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << securePassword(np) << "\t" <<  setw(20) << left << n << endl;
                     strcpy(currentuser.pass, np);
                     cout << "\n\n\t\t>> Password changed successfully!\n";
+                    fstream log; log.open(files[3], ios::out | ios::app);
+                    log << currentuser.type << " " << currentuser.id << " Changed password."<<".\n";
+                    log.close();
                 }
                 else{
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" << setw(20) << left <<  n << endl;
@@ -577,7 +641,7 @@ void changepass(int t=0){
         rename("temp.txt", files[t]);
     }else
         cout << "\n\n\t\t>> Incorrect ID.\n";
-    cont();
+    cont(1);
 }
 
 // Account Menu
@@ -610,7 +674,8 @@ void accountManagement(int t=0){
         case 0:
             exit(0);
         default:
-            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
     }while (choice != 6);
@@ -647,7 +712,8 @@ void studentPage(){
         case 0:
             exit(0);
         default:
-            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
     }while (choice != 6);
@@ -659,10 +725,9 @@ void studentMenu(){
     clear();
     int choice;
     do{
-        cout << "\n\n\t\t----------------- User Login ";
-        cout << "-----------------\n";
+        cout << "\n\n\t\t----------------- User Login -----------------\n";
         // cout << "\n\n\t\t>> please Enter any option \n\n";
-        cout << "\t\t1. Log in\n\n\t\t2. Register\n\n\t\t3. Forgot Password\n\n\t\t4. Back\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
+        cout << "\n\t\t1. Log in\n\n\t\t2. Register\n\n\t\t3. Forgot Password\n\n\t\t4. Back\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
         cin >> choice;
         switch (choice)
         {
@@ -679,6 +744,8 @@ void studentMenu(){
         case 0:
             exit(0);
         default:
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
     }while(choice!=4);
@@ -766,7 +833,7 @@ void acceptrequest(){
         }else
             cout << "\n\n\t\t>> Book Already lent!\n" << endl;
     }else
-        cout << "\nNo Request for This Book!\n";
+        cout << "\n\n\t\tNo Request for This Book!\n";
     cont(1);
 }
 
@@ -775,7 +842,7 @@ void acceptreturn(){
     string bn, uid;
     char value[50], bid[50];
     cin.ignore();
-    cout << "Enter book ID to return: ";
+    cout << "\n\n\t\tEnter book ID to return: ";
     cin.getline(value, 50);
     if(check(value, 7)){
             ifstream open(files[7]);
@@ -798,7 +865,7 @@ void acceptreturn(){
                         case 'Y':
                             // write << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
                             cout << "\nBook Return Successfull\n" << endl;
-                            cout << "User with ID: " << uid << " returned The Book: " << bn << endl; 
+                            cout << "User with ID: " << uid << " returned The Book: " << bn << endl;
                             break;
                         default:
                             neww << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
@@ -809,12 +876,11 @@ void acceptreturn(){
                 else
                     neww << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
             }
-            // write.close();
             open.close();
             remove(files[7]);
             rename("temp.txt", files[7]);
     }else
-        cout << "\nBook not Lent!\n";
+        cout << "\n\n\t\tBook not Lent!\n";
     cont();
 }
 
@@ -824,7 +890,7 @@ void addblacklist(){
     string un, up;
     char value[50], uid[50], reason[100];
     cin.ignore();
-    cout << "Enter User ID to add to blacklist: ";
+    cout << "\n\n\t\tEnter User ID to add to blacklist: ";
     cin.getline(value, 50);
     if(check(value, 0)){
             ifstream open(files[7]);
@@ -833,8 +899,8 @@ void addblacklist(){
             while (open >> uid >> up >> un) {
                 if (strcmp(uid, value) == 0) {
                     string confirm; char y;
-                    cout <<"User ID: " << uid << endl << "User name: " << un << endl;
-                    cout << "Confirm to add user to blacklist? y/n :";
+                    cout <<"\n\t\tUser ID: " << uid << endl << "\n\t\tUser name: " << un << endl;
+                    cout << "\n\n\t\tConfirm to add user to blacklist? y/n :";
                     cin >> confirm;
 
                     if (confirm[0] == 'Y' || confirm[0] == 'y')
@@ -845,16 +911,16 @@ void addblacklist(){
                     switch(y){
                         case 'y':
                         case 'Y':
-                            cout << endl << "Enter Reason: " ;
+                            cout << endl << "\n\n\t\tEnter Reason: " ;
                             cin.ignore();
                             cin.getline(reason, 100);
 
                             // write << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
-                            cout << "\nUser " << uid << "added to blacklist for " << reason << endl;
+                            cout << "\n\n\t\tUser " << uid << "added to blacklist for " << reason << endl;
                             break;
                         default:
                             neww << setw(10) << left << uid << "\t" << setw(20) << left << up << "\t" << setw(20) << left << un << endl;
-                            cout << "\nProcess canceled!\n";
+                            cout << "\n\n\t\tProcess canceled!\n";
                             break;
                     }
                 }
@@ -866,13 +932,25 @@ void addblacklist(){
             remove(files[7]);
             rename("temp.txt", files[7]);
     }else
-        cout << "\nNo user with this ID found\n";
+        cout << "\n\n\t\tNo user with this ID found\n";
     cont();
 }
 
 void showUsers(int t=0){
     char u[50], p[50], n[50];
-     t == 1 ? cout << "\n-----------------\n Blacklist\n-----------------\n" : cout << "\n-----------------\n Users List\n-----------------\n";
+     switch(t){
+     case 0:
+        cout << "\n\n\t\t----------------- Users List -----------------\n";
+        break;
+     case 1:
+        cout << "\n\n\t\t----------------- Blacklist -----------------\n";
+        break;
+     case 8:
+        cout << "\n\n\t\t----------------- Librarian List-----------------\n";
+        break;
+     default:
+        break;
+        }
     user x;
 
     cin.getline(x.id, 10);
@@ -880,7 +958,7 @@ void showUsers(int t=0){
     ifstream file(files[t]);
     bool flag = false;
     while(file>>u>>p>>n){
-        cout << setw(10) << left << u << setw(10) << right << n << endl;
+        cout << "\n\n\t\t" << setw(10) << left << u << setw(10) << right << n << endl;
     }
     file.close();
     cont(1);
@@ -915,7 +993,8 @@ void lendManagement(){
         case 0:
             exit(0);
         default:
-            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
     }while (choice != 6);
@@ -928,7 +1007,7 @@ void userManagement()
     clear();
     int choice;
     do{
-        cout << "\n----------------- BOOK MANAGEMENT -----------------\n"; info();
+        cout << "\n\n\t\t----------------- BOOK MANAGEMENT -----------------\n"; info();
         cout << "\n\n\t\t1. Show Users\n\n\t\t2. Blacklists\n\n\t\t3. Add to Blacklist\n\n\t\t4. Remove from Blacklist\n\n\t\t5. \n\n\t\t6. Back\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
         cin >> choice;
         switch (choice){
@@ -952,7 +1031,8 @@ void userManagement()
         case 0:
             exit(0);
         default:
-            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
     }while (choice != 6);
@@ -965,9 +1045,8 @@ void librarianMenu(int t=1){
     if (login(t)){
         int choice;
         do{
-            cout << "\n----------------- WELCOME TO AASTU LMS -----------------\n\n"; info();
-            cout << "\n\n\t\t>> please Enter any option \n\n";
-            cout << "\t\t1. Manage Books\n\n\t\t2. Transactions\n\n\t\t3. Manage Users\n\n\t\t4. Inventory\n\n\t\t5. Activity Log\n\n\t\t6. Back\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
+            cout << "\n\n\t\t----------------- WELCOME TO AASTU LMS -----------------\n\n"; info();
+            cout << "\n\n\t\t1. Manage Books\n\n\t\t2. Transactions\n\n\t\t3. Manage Users\n\n\t\t4. Inventory\n\n\t\t5. Activity Log\n\n\t\t6. Account Setting\n\n\t\t7. Back\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
             cin >> choice;
 
             switch (choice){
@@ -981,20 +1060,24 @@ void librarianMenu(int t=1){
                 userManagement();
                 break;
             case 4:
-                // inventory();
+                inventory();
                 break;
             case 5:
                 showfile(3);
                 break;
             case 6:
+                accountManagement(1);
+                break;
+            case 7:
                 break;
             case 0:
                 exit(0);
             default:
-                cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+                clear();
+                cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
                 break;
             }
-        }while (choice != 6);
+        }while (choice != 7);
         clear();
     }
 }
@@ -1009,32 +1092,40 @@ void adminMenu(){
         currentuser.id[i] = ' ';}
 
     do{
-        cout << "\n----------------- WELCOME ADMIN -----------------\n\n"; info();
-        cout << "\n\n\t\t1. Add Librarian\n\n\t\t2. Display Activity Log\n\n\t\t3. Librarian mode\n\n\t\t4. Student Mode\n\n\t\t5. Back\n\n\t\t0. Destroy System\n\n\t\t>> Enter your choice: \t";
+        cout << "\n\n\t\t----------------- WELCOME ADMIN -----------------\n\n"; info();
+        cout << "\n\n\t\t1. Add Librarian\n\n\t\t2. Librarian List\n\n\t\t3. Activity Log\n\n\t\t4. Librarian mode\n\n\t\t5. Student Mode\n\n\t\t6. Back\n\n\t\t0. Destroy System\n\n\t\t>> Enter your choice: \t";
         cin >> choice;
         switch (choice){
         case 1:
             signin(1);
             break;
         case 2:
-            showfile(3);
+            showUsers(1);
             break;
         case 3:
-            librarianMenu(5);
+            showfile(3);
             break;
         case 4:
-            studentPage();
+            librarianMenu(5);
             break;
         case 5:
+            studentPage();
+            break;
+        case 6:
+            inventory();
+            break;
+        case 7:
             break;
         case 0:
+            clear();
             cout << "\n\n\t\tBOOOOOOOOOOOOOMMMMMMM" << endl;
             exit(0);
         default:
-            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t See you later!";
+            clear();
+            cout << "\n\n\t\t>> Wrong Input! \n\n\t\t Try Again!";
             break;
         }
-    }while (choice != 5);
+    }while (choice != 7);
       clear();
 }
 
@@ -1048,11 +1139,9 @@ void firstMenu(){
 
         switch (choice){
         case 1:
-            clear();
             studentMenu();
             break;
         case 2:
-            clear();
             librarianMenu();
             break;
         case 3:
@@ -1063,10 +1152,12 @@ void firstMenu(){
             x==9 ? adminMenu() : exit(0);
             break;
         default:
+            clear();
             cout << "\n\n\t\t>> Wrong Input! Try Again";
             break;
         }
     }while(choice != 3);
+    clear();
     cout << "\n\n\t\tBye, See you later";
 }
 
