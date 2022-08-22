@@ -1,9 +1,8 @@
 --------- 	-----------------------------------------	----------          
 BookID    	Title                                   	Author              
 --------- 	-----------------------------------------	----------          
-A0001     	Abera_is_Dead.                          	The_Killer          
-A0002     	I'm_the_one                             	khalifa             
-A0003     	She_is_here                             	Who?                
-A0004     	Aster_Aweke                             	is_here             
-A0006     	She_is_mine_now                         	i_wrote_this        
-A0005     	I_am_The_Admin                          	I'm_watching_you.   
+B0001     	Fundamentals_of_Database_Systems        	Ramez_Elmasri       
+B0002     	Sustainability_in_Civil_Engineering     	Andrew_Braham       
+B0003     	Distillation_Design                     	Henry_Kister        
+B0004     	Clean_Code                              	Robert_C._Martin    
+B0005     	The_Architecture_of_the_City            	Aldo_Rossi          

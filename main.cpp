@@ -243,7 +243,7 @@ void adminMenu(){ clear();
       clear();
 }
 // Main Menu
-void firstMenu(){ clear();
+void firstMenu(){ 
     int choice;
     do {
         cout << "\n\n\t\t----------------- WELCOME TO AASTU LMS -----------------\n" << endl;
@@ -340,7 +340,7 @@ void signin(int t=0){ clear();
                 file.open(files[t], ios::out | ios::app);
                 file << setw(10) << left <<  replace(newuser.id) << "\t" <<  setw(20) << left << securePassword(newuser.pass) << "\t" << setw(20) << left <<  replace(newuser.name) << endl;
                 file.close();
-                cout << "\n\n\t\t Registration Successful\n";
+                cout << "\n\n\t\t<> Registration Successful\n";
                 fstream log; log.open(files[3], ios::out | ios::app);
                 t == 1? log << dt << "New Librarian " << newuser.id << " added by Admin.\n": log << dt << "New Student " << newuser.id << " Registered.\n";
                 log.close();
@@ -537,7 +537,7 @@ void changename(int t=0){ clear();
                 if(np== securePassword(p, 'd')){
                     strcpy(currentuser.name, nn);
                     write << setw(10) << left <<  uid << "\t" <<  setw(20) << left << p << "\t" <<  setw(20) << left << replace(nn) << endl;
-                    cout << "\n\n\t\tUpdate successful!\n";
+                    cout << "\n\n\t\t<> Update successful!\n";
                     fstream log; log.open(files[3], ios::out | ios::app);
                     log << dt << currentuser.type << " " << currentuser.id << " Changed his/her name from " << replace(n, '_', ' ') << " to " << nn <<".\n";
                     log.close();
@@ -755,7 +755,7 @@ void deletebook(){ clear();
                 switch(y){
                     case 'y':
                     case 'Y':{
-                        cout << "\n\n\t\t Deleted successfully!\n";
+                        cout << "\n\n\t\t<> Deleted successfully!\n";
                         fstream log; log.open(files[3], ios::out | ios::app);
                         log << dt << currentuser.type << " " << currentuser.id << " Deleted book " << bid <<".\n";
                         log.close();
@@ -774,8 +774,7 @@ void deletebook(){ clear();
     cont();
 }
 // Lend Transaction Menu
-void lendManagement(){ clear();
-    int choice;
+void lendManagement(){ clear(); int choice;
     do{
         cout << "\n\n\t\t----------------- BOOK LEND MANAGEMENT -----------------\n "; info();
         cout << "\n\n\t\t1. Show Requests\n\n\t\t2. Accept / Decline Requests\n\n\t\t3. Show Borrowed Books\n\n\t\t4. Accept Book Return\n\n\t\t5. Back\n\n\n\t\t0. Exit\n\n\t\t>> Enter your choice: \t";
@@ -825,14 +824,13 @@ void acceptrequest(){ clear();
                             cout << "\n\t\tUser with ID: \t" << uid << " lent The Book: \t" << bn << endl;
                             break;
                         case '2':
-                            cout << "\n\t\t<> Request declined Successful.\n" << endl;
+                            cout << "\n\t\t<> Request declined Successfully.\n" << endl;
                             break;
                         default:
                             neww << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
                             cout << "\n\n\t\t<!> Transfer canceled!\n";
                             break;
-                    }
-                }else
+                }   }else
                     neww << setw(10) << left << bid << "\t" << setw(40) << left << bn << "\t" << setw(20) << left << uid << endl;
             } write.close(); open.close(); neww.close();
             remove(files[6]); rename("temp.txt", files[6]);
@@ -843,8 +841,7 @@ void acceptrequest(){ clear();
     cont();
 }
 // Librarian accept book return
-void acceptreturn(){
-    string bn, uid; char value[50], bid[50];
+void acceptreturn(){ string bn, uid; char value[50], bid[50];
     cout << "\n\n\t\t----------------- ACCEPT BOOK RETURN -----------------\n ";
     cin.ignore();
     cout << "\n\n\t\t>> Enter book ID to accept return: ";
@@ -934,11 +931,9 @@ void addblacklist(){ string un, up; char value[50], uid[50], reason[100];
                             neww << setw(10) << left << uid << "\t" << setw(20) << left << up << "\t" << setw(20) << left << un << endl;
                             break;
                         default:
-
                             cout << "\n\n\t\t<!> Process canceled!\n";
                             break;
-                    }
-                }
+                }   }
             } open.close(); neww.close();
     }else
         cout << "\n\n\t\t<!> No user with this ID found!\n";
@@ -999,6 +994,7 @@ void inventory(int t = 1){clear();
 }
 int main()
 {   dt[strlen(dt) - 1] = ' '; // To remove date new line delimiter for activity log
+    cout << "\n\n\t\t Guest ID and Password: 12345 \n\t\t Admin Passcode = 9\n\n";
     firstMenu();
     return 0;
 }
